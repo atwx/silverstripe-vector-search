@@ -1,6 +1,6 @@
 {
-    "name": "silverstripe-module/skeleton",
-    "description": "A skeleton for Silverstripe CMS modules.",
+    "name": "atwx/s2embed",
+    "description": "Adds support for vector embeddings to you mysql database.",
     "type": "silverstripe-vendormodule",
     "keywords": [
         "silverstripe",
