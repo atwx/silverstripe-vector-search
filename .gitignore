@@ -6,3 +6,4 @@ composer.lock
 *.css.map
 yarn-error.log
 .vscode
+.idea
