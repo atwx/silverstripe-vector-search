@@ -1,3 +1,17 @@
+present rag
+
+teaser
+- too much tokens
+
+Making RAG in SilverStripe easy - add support for Vector fields
+
+10min + 5min, insg. 15min.
+
+____
+goal: 
+- catch up with AI
+
+
 What was the goal?
 - add support for mysql vector fields in silverstripe
 
