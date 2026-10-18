@@ -25,3 +25,5 @@ actually hard, no real documentation around creating a custom fields
 # Enhancements
 - implement sort
 - possibly make 
+
+Werner docs
