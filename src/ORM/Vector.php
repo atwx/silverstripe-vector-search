@@ -3,6 +3,7 @@
 namespace Atwx\ORM;
 
 use Atwx\ORM\Func\Func;
+use InvalidArgumentException;
 use Override;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\DB;
@@ -33,7 +34,7 @@ class DBVector extends DBField
         # and returns an e and e.source (-> extra class)
         if ($value !== null && !is_array($value)) {
             throw new InvalidArgumentException(
-                'DBVector expects an array'
+                'DBVector expects a compiled Function as value. You likely want to use VectorFrom::single(...)->compile()'
             );
         }
 
@@ -47,9 +48,12 @@ class DBVector extends DBField
     }
 
     public function writeToManipulation(array &$manipulation): void
-    {    
+    {
+        $sql = array_shift($this->value);
+        $params = $this->value;
+
         $manipulation['fields'][$this->name] = $this->value
-            ? [Func::compile_obj($this->value) => []]
+            ? [$this->sql => $params]
             : $this->nullValue();
     }
 

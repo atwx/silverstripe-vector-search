@@ -32,8 +32,8 @@ class VectorFrom extends Func {
     }
 
     #[Override]
-    protected function compile_args(): string
+    protected function compile_args(): array
     {
-        return Convert::raw2sql(json_encode($this->args[0]), true);
+        return ['?', json_encode($this->args[0])];
     }
 }
