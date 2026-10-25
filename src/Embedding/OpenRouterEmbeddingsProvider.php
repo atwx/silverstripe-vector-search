@@ -13,6 +13,8 @@ use SilverStripe\Core\Environment;
  * without touching this file. If you change `model` to one with a different output size,
  * update `dimensions` here AND the `Vector(<size>)` column on your DataObject to match,
  * or writes will fail (the VECTOR column has a fixed size).
+ * 
+ * @author Sebi <https://github.com/ItsSebis>
  */
 class OpenRouterEmbeddingsProvider implements EmbeddingsProvider
 {
