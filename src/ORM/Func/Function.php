@@ -5,7 +5,9 @@ namespace Atwx\ORM\Func;
 use SilverStripe\Core\Convert;
 
 class Func {
-    public string $function = None;
+    public string $function = '';
+    public int $num_args = 0;
+    public array $args = [];
     public string $template = "%s (%s)";
     public string $arg_seperator = ",";
 

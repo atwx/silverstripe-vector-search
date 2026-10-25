@@ -2,13 +2,13 @@
 
 namespace Atwx\ORM\Func;
 
-use App\Tasks\EmbeddingsProvider;
+use Atwx\Embedding\EmbeddingsProvider;
 use Override;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 
 class VectorFrom extends Func {
-    public $function = 'VEC_FromText';
+    public string $function = 'VEC_FromText';
 
     public function __construct(array $vec) {
         parent::__construct($vec);
