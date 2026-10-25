@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use Override;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\DB;
-use SilverStripe\Core\Injector\Injector;
 
 class DBVector extends DBField
 {

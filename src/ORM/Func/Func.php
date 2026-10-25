@@ -2,8 +2,6 @@
 
 namespace Atwx\ORM\Func;
 
-use SilverStripe\Core\Convert;
-
 class Func {
     public string $function = '';
     public int $num_args = 0;

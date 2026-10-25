@@ -6,7 +6,6 @@ use Atwx\ORM\Func\Column;
 use Atwx\ORM\Func\Distance\VecDistanceCosine;
 use Atwx\ORM\Func\Func;
 use Atwx\ORM\Func\VectorFrom;
-use SilverStripe\Core\Convert;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataQuery;

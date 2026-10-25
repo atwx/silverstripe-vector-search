@@ -4,7 +4,6 @@ namespace Atwx\ORM\Func;
 
 use Atwx\Embedding\EmbeddingsProvider;
 use Override;
-use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 
 class VectorFrom extends Func {
