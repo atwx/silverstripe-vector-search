@@ -20,3 +20,7 @@
 - check namespaces
 
 - docs for api key, etc.
+
+- remove credentials
+
+- database Funcs resolved by injector to allow support for other databases
