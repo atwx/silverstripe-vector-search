@@ -2,12 +2,10 @@
 
 namespace Atwx\Embedding;
 
-// Original author: Sebi
-
 /**
  * Turns text into an embedding vector. To use a different provider (a local model,
  * a different API), write a class implementing this interface and point the Injector
- * binding in app/_config/vector-showcase.yml at it — nothing else needs to change.
+ * binding in your project's config at it — nothing else needs to change.
  */
 interface EmbeddingsProvider
 {

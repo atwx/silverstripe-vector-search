@@ -11,7 +11,6 @@ use SilverStripe\Core\Injector\Injector;
 
 class DBVector extends DBField
 {
-    # TODO: abstract this
     private string $distance = 'cosine';
 
     #[Override]
@@ -20,7 +19,6 @@ class DBVector extends DBField
         return false;
     }
 
-    # #[Override]
     public function __construct(?string $name = null, int $size = 1536, array $options = [])
     {
         $this->size = $size;
@@ -30,8 +28,6 @@ class DBVector extends DBField
 
     public function setValue($value, $record = null, $markChanged = true): static
     {
-        # TODO: Possibly autogen embeddings from Text, Possibly extra field which creates two db field
-        # and returns an e and e.source (-> extra class)
         if ($value !== null && !is_array($value)) {
             throw new InvalidArgumentException(
                 'DBVector expects a compiled Function as value. You likely want to use VectorFrom::single(...)->compile()'
@@ -58,10 +54,6 @@ class DBVector extends DBField
             : $this->nullValue();
     }
 
-    # TODO: Read manipulation
-    # TODO: inspect sql
-    # 15
-
     #[Override]
     public function getIndexSpecs(): ?array
     {
@@ -76,10 +68,4 @@ class DBVector extends DBField
     {
         DB::require_field($this->tableName, $this->name, $this->getFieldSpec());
     }
-
-    // public function scaffoldFormField(?string $title = null, array $params = []): ?FormField
-    // {
-    //     // A raw vector isn't sensibly editable as a form field - no CMS UI for this column.
-    //     return null;
-    // }
 }

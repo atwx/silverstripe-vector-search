@@ -5,16 +5,14 @@ namespace Atwx\Embedding;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Environment;
 
-// Original author: Sebi
-
 /**
  * Default EmbeddingsProvider: calls OpenRouter's OpenAI-compatible /embeddings endpoint.
  *
- * Requires OPENROUTER_API_KEY in .env (see .env.example) — never hardcode the key here.
- * `model`/`dimensions` are set via app/_config/vector-showcase.yml so they can be changed
+ * Requires OPENROUTER_API_KEY in .env — never hardcode the key here.
+ * `model`/`dimensions` are set via _config/embeddings.yml so they can be changed
  * without touching this file. If you change `model` to one with a different output size,
- * update `dimensions` here AND DocsVectorStore's `dimensions` to match, or search results
- * will fail (the VECTOR column has a fixed size).
+ * update `dimensions` here AND the `Vector(<size>)` column on your DataObject to match,
+ * or writes will fail (the VECTOR column has a fixed size).
  */
 class OpenRouterEmbeddingsProvider implements EmbeddingsProvider
 {
