@@ -2,7 +2,7 @@
 
 Vector embeddings and similarity search for the Silverstripe ORM, using MariaDB's native `VECTOR` type.
 
-S2 Embed adds a `Vector` field type, turns text into embeddings through a pluggable provider (OpenRouter by default), and orders `DataList`s by vector distance. It is a good fit for semantic search, "related content", and retrieval for RAG setups.
+S2 Embed adds a `Vector` field type, turns text into embeddings through a pluggable provider (OpenRouter by default), and orders `DataList` by vector distance. It is a good fit for semantic search, "related content", and retrieval for RAG setups.
 
 ## Requirements
 
