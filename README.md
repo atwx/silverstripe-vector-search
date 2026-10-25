@@ -156,10 +156,12 @@ Only MariaDB is supported at the moment. To support another database, add SQL fu
 
 ## Example project
 
-[silverstripe-vector-showcase](https://github.com/atwx/silverstripe-vector-showcase) imports the Silverstripe developer docs and answers questions about them with vector search.
+[silverstripe-embed-demo](https://github.com/atwx/silverstripe-embed-demo) imports the Silverstripe developer docs and answers questions about them with vector search.
 
 ## Contributors
 
 | [![Sebi](https://github.com/ItsSebis.png?size=100)](https://github.com/ItsSebis) | [![Apilonius64](https://github.com/Apilonius64.png?size=100)](https://github.com/Apilonius64) |
 | :------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------: |
 | [Sebi](https://github.com/ItsSebis)                                              | [Apilonius64](https://github.com/Apilonius64)                                                 |
+
+See also [silverstripe-vector-showcase](https://github.com/atwx/silverstripe-vector-showcase).
