@@ -10,3 +10,13 @@
 - Check whether index works
 
 - Write tests for different backends
+
+- Format code
+
+- Escape Values!
+
+- thanks to in comments
+
+- check namespaces
+
+- docs for api key, etc.

@@ -1,0 +1,7 @@
+SilverStripe\Core\Injector\Injector:
+  Atwx\Embedding\EmbeddingsProvider:
+    class: Atwx\Embedding\OpenRouterEmbeddingsProvider
+
+Atwx\Embedding\OpenRouterEmbeddingsProvider:
+  model: 'openai/text-embedding-3-small'
+  dimensions: 1536

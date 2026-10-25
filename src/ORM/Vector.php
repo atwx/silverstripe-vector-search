@@ -2,6 +2,7 @@
 
 namespace Atwx\ORM;
 
+use Atwx\ORM\Func\Func;
 use Override;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\DB;
@@ -48,7 +49,7 @@ class DBVector extends DBField
     public function writeToManipulation(array &$manipulation): void
     {    
         $manipulation['fields'][$this->name] = $this->value
-            ? ['VEC_FromText(?)' => [json_encode($this->value)]]
+            ? [Func::compile_obj($this->value) => []]
             : $this->nullValue();
     }
 
