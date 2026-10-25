@@ -49,11 +49,12 @@ class DBVector extends DBField
 
     public function writeToManipulation(array &$manipulation): void
     {
+        $existent = ($this->value !== null);
         $sql = array_shift($this->value);
         $params = $this->value;
 
-        $manipulation['fields'][$this->name] = $this->value
-            ? [$this->sql => $params]
+        $manipulation['fields'][$this->name] = $existent
+            ? [$sql => $params]
             : $this->nullValue();
     }
 

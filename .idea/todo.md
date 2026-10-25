@@ -13,7 +13,7 @@
 
 - Format code
 
-- Escape Values!
+- Escape Values!, check if escaped!!
 
 - thanks to in comments
 
