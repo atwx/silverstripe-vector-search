@@ -42,7 +42,7 @@ class VSearch {
             $query,
             $annotation_name,
             new VecDistanceCosine(
-                new Column('Embedding'),
+                new Column($column),
                 VectorFrom::single($query)
             )
         )->sort($annotation_name, $dir);
