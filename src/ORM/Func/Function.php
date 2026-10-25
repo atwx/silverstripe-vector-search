@@ -36,7 +36,7 @@ class Func {
         for ($i=0; $i != $this->num_args; $i++) {
             $result = $this->compile_obj($this->args[$i]);
             array_push($compiled_sql, array_shift($result));
-            array_push($compiled_args, $result);
+            array_push($compiled_args, ...$result);
         }
 
         $compiled = [join($this->arg_seperator, $compiled_sql)];

@@ -11,7 +11,6 @@ class Column extends Func {
 
     public function compile(): array {
         return [
-            '?',
             DB::get_conn()->escapeIdentifier($this->args[0])
         ];
     }
