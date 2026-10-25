@@ -43,7 +43,7 @@ class VSearch {
             $annotation_name,
             new VecDistanceCosine(
                 new Column($column),
-                VectorFrom::single($query)
+                VectorFrom::single($text)
             )
         )->sort($annotation_name, $dir);
     }
