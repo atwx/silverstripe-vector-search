@@ -2,7 +2,6 @@
 
 namespace Atwx\VectorSearch\ORM;
 
-use InvalidArgumentException;
 use Override;
 use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\ORM\FieldType\DBField;
