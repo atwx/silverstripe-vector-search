@@ -1,6 +1,6 @@
 <?php
 
-namespace Atwx\ORM\Func;
+namespace Atwx\ORM\Func\Generic;
 
 class Func {
     public string $function = '';

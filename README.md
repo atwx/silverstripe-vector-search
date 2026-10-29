@@ -51,7 +51,7 @@ Run `sake db:build --flush` to create the column and index.
 ### 2. Store an embedding
 
 ```php
-use Atwx\ORM\Func\VectorFrom;
+use Atwx\ORM\Func\Generic\VectorFrom;
 
 $doc = Document::create();
 $doc->Content = $text;
@@ -90,7 +90,7 @@ foreach ($results as $doc) {
 
 ### Custom distance queries
 
-`VSearch::annotate_query()` adds any SQL function expression to the query as a named field. The distance functions live in `Atwx\ORM\Func\Distance`:
+`VSearch::annotate_query()` adds any SQL function expression to the query as a named field. The distance functions live in `Atwx\ORM\Func\Generic\Distance`:
 
 | Class                  | SQL function              |
 | ---------------------- | ------------------------- |
@@ -99,9 +99,9 @@ foreach ($results as $doc) {
 | `VecDistanceEuclidean` | `VEC_DISTANCE_EUCLIDEAN`  |
 
 ```php
-use Atwx\ORM\Func\Column;
-use Atwx\ORM\Func\Distance\VecDistanceEuclidean;
-use Atwx\ORM\Func\VectorFrom;
+use Atwx\ORM\Func\Generic\Column;
+use Atwx\ORM\Func\Generic\Distance\VecDistanceEuclidean;
+use Atwx\ORM\Func\Generic\VectorFrom;
 use Atwx\ORM\Helpers\VSearch;
 
 $list = VSearch::annotate_query(
@@ -152,7 +152,7 @@ SilverStripe\Core\Injector\Injector:
 
 ## Supported databases
 
-Only MariaDB is supported at the moment. To support another database, add SQL function wrappers in `Atwx\ORM\Func` (subclasses of `Func`) that map to that database's vector functions.
+Only MariaDB is supported at the moment. To support another database, add SQL function wrappers in `Atwx\ORM\Func\Generic` (subclasses of `Func`) that map to that database's vector functions.
 
 ## Example project
 

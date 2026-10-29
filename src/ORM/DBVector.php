@@ -2,7 +2,7 @@
 
 namespace Atwx\ORM;
 
-use Atwx\ORM\Func\Func;
+use Atwx\ORM\Func\Generic\Func;
 use InvalidArgumentException;
 use Override;
 use SilverStripe\ORM\FieldType\DBField;

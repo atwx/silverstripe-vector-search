@@ -2,10 +2,10 @@
 
 namespace Atwx\ORM\Helpers;
 
-use Atwx\ORM\Func\Column;
-use Atwx\ORM\Func\Distance\VecDistanceCosine;
-use Atwx\ORM\Func\Func;
-use Atwx\ORM\Func\VectorFrom;
+use Atwx\ORM\Func\Generic\Column;
+use Atwx\ORM\Func\Generic\Distance\VecDistanceCosine;
+use Atwx\ORM\Func\Generic\Func;
+use Atwx\ORM\Func\Generic\VectorFrom;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataQuery;
