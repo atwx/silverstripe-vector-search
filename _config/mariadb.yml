@@ -3,7 +3,7 @@ SilverStripe\Core\Injector\Injector:
     class: Atwx\VectorSearch\ORM\Func\Backend\Generic\GColumn
 
   Atwx\VectorSearch\ORM\Func\VectorFrom:
-    class: Atwx\VectorSearch\ORM\Func\Backend\Generic\VectorFrom
+    class: Atwx\VectorSearch\ORM\Func\Backend\Generic\GVectorFrom
 
   Atwx\VectorSearch\ORM\Func\Distance\VecDistance:
     class: Atwx\VectorSearch\ORM\Func\Backend\Generic\Distance\GVecDistance

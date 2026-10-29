@@ -18,8 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Atwx\VectorSearch\\": "src/",
-            "Atwx\VectorSearch\\Tests\\": "tests/php/"
+            "Atwx\\VectorSearch\\": "src/",
+            "Atwx\\VectorSearch\\Tests\\": "tests/php/"
         }
     },
     "minimum-stability": "dev",

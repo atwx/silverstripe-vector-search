@@ -1,6 +1,6 @@
 <?php
 
-namespace Atwx\VectorSearch\ORM\Func\Generic\Distance;
+namespace Atwx\VectorSearch\ORM\Func\Backend\Generic\Distance;
 
 use Atwx\VectorSearch\ORM\Func\Distance\VecDistanceCosine;
 
