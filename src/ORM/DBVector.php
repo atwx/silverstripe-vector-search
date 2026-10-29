@@ -1,8 +1,7 @@
 <?php
 
-namespace Atwx\ORM;
+namespace Atwx\VectorSearch\ORM;
 
-use Atwx\ORM\Func\Generic\Func;
 use InvalidArgumentException;
 use Override;
 use SilverStripe\ORM\FieldType\DBField;

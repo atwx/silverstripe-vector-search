@@ -1,14 +1,11 @@
 <?php
 
-namespace Atwx\ORM\Func\Generic;
+namespace Atwx\VectorSearch\ORM\Func\Generic;
 
+use Atwx\VectorSearch\ORM\Func\Column;
 use SilverStripe\ORM\DB;
 
-class Column extends Func {
-    public function __construct(string $name) {
-        parent::__construct($name);
-    }
-
+class GColumn extends Column {
     public function compile(): array {
         return [
             DB::get_conn()->escapeIdentifier($this->args[0])

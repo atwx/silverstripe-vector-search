@@ -1,11 +1,11 @@
 <?php
 
-namespace Atwx\ORM\Helpers;
+namespace Atwx\VectorSearch\ORM\Helpers;
 
-use Atwx\ORM\Func\Generic\Column;
-use Atwx\ORM\Func\Generic\Distance\VecDistanceCosine;
-use Atwx\ORM\Func\Generic\Func;
-use Atwx\ORM\Func\Generic\VectorFrom;
+use Atwx\VectorSearch\ORM\Func\Column;
+use Atwx\VectorSearch\ORM\Func\Distance\VecDistanceCosine;
+use Atwx\VectorSearch\ORM\Func\Func;
+use Atwx\VectorSearch\ORM\Func\VectorFrom;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataQuery;
@@ -40,8 +40,8 @@ class VSearch {
         return VSearch::annotate_query(
             $query,
             $annotation_name,
-            new VecDistanceCosine(
-                new Column($column),
+            VecDistanceCosine::create(
+                Column::create($column),
                 VectorFrom::single($text)
             )
         )->sort($annotation_name, $dir);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Atwx\Embedding;
+namespace Atwx\VectorSearch\Embedding;
 
 /**
  * Turns text into an embedding vector. To use a different provider (a local model,

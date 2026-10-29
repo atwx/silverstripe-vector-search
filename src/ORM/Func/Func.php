@@ -1,6 +1,8 @@
 <?php
 
-namespace Atwx\ORM\Func\Generic;
+namespace Atwx\VectorSearch\ORM\Func;
+
+use SilverStripe\Core\Injector\Injector;
 
 class Func {
     public string $function = '';
@@ -46,5 +48,10 @@ class Func {
         $compiled = [sprintf($this->template, $this->function, array_shift($result))];
 
         return array_merge($compiled, $result);
+    }
+
+    public static function create(...$args) {
+        # R: works?
+        return Injector::inst()->create(static::class, ...$args);
     }
 }

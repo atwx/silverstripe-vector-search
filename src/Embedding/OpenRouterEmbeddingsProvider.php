@@ -1,6 +1,6 @@
 <?php
 
-namespace Atwx\Embedding;
+namespace Atwx\VectorSearch\Embedding;
 
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Environment;

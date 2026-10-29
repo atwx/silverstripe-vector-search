@@ -1,14 +1,14 @@
 <?php
 
-namespace Atwx\ORM\Func\Generic;
+namespace Atwx\VectorSearch\ORM\Func;
 
-use Atwx\Embedding\EmbeddingsProvider;
-use Override;
+use Atwx\VectorSearch\ORM\Func\Func;
+
+use Atwx\VectorSearch\Embedding\EmbeddingsProvider;
 use SilverStripe\Core\Injector\Injector;
+use Override;
 
-class VectorFrom extends Func {
-    public string $function = 'VEC_FromText';
-
+abstract class VectorFrom extends Func {
     public function __construct(array $vec) {
         parent::__construct($vec);
     }
@@ -16,7 +16,7 @@ class VectorFrom extends Func {
     public static function single(string $text): VectorFrom {
         $embeddings = Injector::inst()->get(EmbeddingsProvider::class);
 
-        return new VectorFrom($embeddings->embed($text));
+        return Injector::inst()->create(VectorFrom::class, $embeddings->embed($text));
     }
 
     public static function batch(array $texts): array {
@@ -24,7 +24,7 @@ class VectorFrom extends Func {
 
         return array_map(
             function ($item) {
-                return new VectorFrom($item);
+                return Injector::inst()->create(VectorFrom::class, $item);
             },
             $embeddings->embedBatch($texts)
         );

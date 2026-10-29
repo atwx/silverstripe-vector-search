@@ -51,7 +51,7 @@ Run `sake db:build --flush` to create the column and index.
 ### 2. Store an embedding
 
 ```php
-use Atwx\ORM\Func\Generic\VectorFrom;
+use Atwx\VectorSearch\ORM\Func\Generic\VectorFrom;
 
 $doc = Document::create();
 $doc->Content = $text;
@@ -77,7 +77,7 @@ foreach ($texts as $i => $text) {
 ### 3. Search by similarity
 
 ```php
-use Atwx\ORM\Helpers\VSearch;
+use Atwx\VectorSearch\ORM\Helpers\VSearch;
 
 $results = VSearch::sort_by_distance(Document::get(), 'Embedding', $userInput)->limit(5);
 
@@ -90,7 +90,7 @@ foreach ($results as $doc) {
 
 ### Custom distance queries
 
-`VSearch::annotate_query()` adds any SQL function expression to the query as a named field. The distance functions live in `Atwx\ORM\Func\Generic\Distance`:
+`VSearch::annotate_query()` adds any SQL function expression to the query as a named field. The distance functions live in `Atwx\VectorSearch\ORM\Func\Generic\Distance`:
 
 | Class                  | SQL function              |
 | ---------------------- | ------------------------- |
@@ -99,10 +99,10 @@ foreach ($results as $doc) {
 | `VecDistanceEuclidean` | `VEC_DISTANCE_EUCLIDEAN`  |
 
 ```php
-use Atwx\ORM\Func\Generic\Column;
-use Atwx\ORM\Func\Generic\Distance\VecDistanceEuclidean;
-use Atwx\ORM\Func\Generic\VectorFrom;
-use Atwx\ORM\Helpers\VSearch;
+use Atwx\VectorSearch\ORM\Func\Generic\Column;
+use Atwx\VectorSearch\ORM\Func\Generic\Distance\VecDistanceEuclidean;
+use Atwx\VectorSearch\ORM\Func\Generic\VectorFrom;
+use Atwx\VectorSearch\ORM\Helpers\VSearch;
 
 $list = VSearch::annotate_query(
     Document::get(),
@@ -116,7 +116,7 @@ $list = VSearch::annotate_query(
 The default provider and model are set in [`_config/embeddings.yml`](_config/embeddings.yml). Override them in your project's config:
 
 ```yaml
-Atwx\Embedding\OpenRouterEmbeddingsProvider:
+Atwx\VectorSearch\Embedding\OpenRouterEmbeddingsProvider:
   model: 'openai/text-embedding-3-small'
   dimensions: 1536
 ```
@@ -125,10 +125,10 @@ If you switch to a model with a different output size, update the `Vector(<size>
 
 ### Using a different embeddings provider
 
-Implement `Atwx\Embedding\EmbeddingsProvider` and bind it with the Injector:
+Implement `Atwx\VectorSearch\Embedding\EmbeddingsProvider` and bind it with the Injector:
 
 ```php
-use Atwx\Embedding\EmbeddingsProvider;
+use Atwx\VectorSearch\Embedding\EmbeddingsProvider;
 
 class LocalEmbeddingsProvider implements EmbeddingsProvider
 {
@@ -146,13 +146,13 @@ class LocalEmbeddingsProvider implements EmbeddingsProvider
 
 ```yaml
 SilverStripe\Core\Injector\Injector:
-  Atwx\Embedding\EmbeddingsProvider:
+  Atwx\VectorSearch\Embedding\EmbeddingsProvider:
     class: App\Embedding\LocalEmbeddingsProvider
 ```
 
 ## Supported databases
 
-Only MariaDB is supported at the moment. To support another database, add SQL function wrappers in `Atwx\ORM\Func\Generic` (subclasses of `Func`) that map to that database's vector functions.
+Only MariaDB is supported at the moment. To support another database, add SQL function wrappers in `Atwx\VectorSearch\ORM\Func\Generic` (subclasses of `Func`) that map to that database's vector functions.
 
 ## Example project
 

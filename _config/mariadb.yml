@@ -1,0 +1,15 @@
+SilverStripe\Core\Injector\Injector:
+  Atwx\VectorSearch\ORM\Func\Column:
+    class: Atwx\VectorSearch\ORM\Func\Backend\Generic\GColumn
+
+  Atwx\VectorSearch\ORM\Func\VectorFrom:
+    class: Atwx\VectorSearch\ORM\Func\Backend\Generic\VectorFrom
+
+  Atwx\VectorSearch\ORM\Func\Distance\VecDistance:
+    class: Atwx\VectorSearch\ORM\Func\Backend\Generic\Distance\GVecDistance
+
+  Atwx\VectorSearch\ORM\Func\Distance\VecDistanceCosine:
+    class: Atwx\VectorSearch\ORM\Func\Backend\Generic\Distance\GVecDistanceCosine
+
+  Atwx\VectorSearch\ORM\Func\Distance\VecDistanceEuclidean:
+    class: Atwx\VectorSearch\ORM\Func\Backend\Generic\Distance\GVecDistanceEuclidean

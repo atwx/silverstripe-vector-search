@@ -1,4 +1,4 @@
 # see https://docs.silverstripe.org/en/developer_guides/configuration/configuration/
 SilverStripe\Core\Injector\Injector:
   Vector:
-    class: Atwx\ORM\DBVector
+    class: Atwx\VectorSearch\ORM\DBVector
