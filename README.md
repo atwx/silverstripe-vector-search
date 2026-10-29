@@ -1,4 +1,4 @@
-# S2 Embed
+# silverstripe-vector-search
 
 Vector embeddings and similarity search for the Silverstripe ORM, using MariaDB's native `VECTOR` type.
 
