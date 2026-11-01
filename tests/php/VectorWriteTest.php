@@ -97,6 +97,29 @@ final class VectorWriteTest extends VectorSearchTestCase
         $this->assertSame([0.0, 0.0, 1.0], $this->storedVector($document->ID));
     }
 
+    public function testReadingAVectorBackGivesTheFloatsItWasWritten(): void
+    {
+        $document = VectorSearchTestDocument::create();
+        $document->Embedding = VectorFrom::create([0.25, 0.5, 0.75]);
+        $document->write();
+
+        $loaded = VectorSearchTestDocument::get()->byID($document->ID);
+
+        $this->assertSame([0.25, 0.5, 0.75], $loaded->Embedding);
+    }
+
+    public function testReadingLeavesTheOtherFieldsAlone(): void
+    {
+        $document = VectorSearchTestDocument::create();
+        $document->Content = 'a document';
+        $document->Embedding = VectorFrom::create([1.0, 0.0, 0.0]);
+        $document->write();
+
+        $loaded = VectorSearchTestDocument::get()->byID($document->ID);
+
+        $this->assertSame('a document', $loaded->Content);
+    }
+
     public function testWritingWithoutAVectorIsRejected(): void
     {
         $document = VectorSearchTestDocument::create();
