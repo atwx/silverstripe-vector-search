@@ -4,17 +4,17 @@ namespace Atwx\VectorSearch\ORM\Func;
 
 use SilverStripe\Core\Injector\Injector;
 
-class Func
+abstract class Func
 {
     protected string $function = '';
-    protected int $num_args = 0;
+    protected int $numArgs = 0;
     protected array $args = [];
     protected string $template = "%s(%s)";
     protected string $argSeparator = ",";
 
     public function __construct()
     {
-        $this->num_args = func_num_args();
+        $this->numArgs = func_num_args();
         $this->args = func_get_args();
     }
 
@@ -37,7 +37,7 @@ class Func
         $compiledSQL = [];
         $compiledArgs = [];
 
-        for ($i = 0; $i != $this->num_args; $i++) {
+        for ($i = 0; $i != $this->numArgs; $i++) {
             $result = $this->compileObj($this->args[$i]);
             array_push($compiledSQL, array_shift($result));
             array_push($compiledArgs, ...$result);

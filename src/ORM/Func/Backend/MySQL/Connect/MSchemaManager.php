@@ -7,9 +7,9 @@ use SilverStripe\ORM\Connect\MySQLSchemaManager;
 
 class MSchemaManager extends MySQLSchemaManager
 {
-    final protected string $indexTemplate = '%s "%s" (%s)';
-    final protected string $argTemplate = '%s=%s';
-    final protected string $argSeparator = ' ';
+    protected string $indexTemplate = '%s "%s" (%s)';
+    protected string $argTemplate = '%s=%s';
+    protected string $argSeparator = ' ';
 
     /**
      * Modified version of MySQLSchemaManager's implementation. Maps the vector type and
@@ -39,6 +39,7 @@ class MSchemaManager extends MySQLSchemaManager
                 $type = 'index';
             }
 
+            // There is no meaningful Collation for vector search
             $column = $index['Column_name'];
             if (
                 in_array($type, ['index', 'unique'])
@@ -165,6 +166,7 @@ class MSchemaManager extends MySQLSchemaManager
         }
     }
 
+    #[Override]
     protected function getIndexSqlDefinition($indexName, $indexSpec)
     {
         if ($indexSpec['type'] == 'using') {

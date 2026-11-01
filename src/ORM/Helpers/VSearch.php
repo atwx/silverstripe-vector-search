@@ -19,12 +19,12 @@ class VSearch
         $params = $compiled;
 
         // selectField() takes SQL without placeholders, so the parameters are inlined here.
-        $sql_with_params = DB::inline_parameters($sql, $params);
+        $sqlWithParams = DB::inline_parameters($sql, $params);
 
         return $query->alterDataQuery(
-            function (DataQuery $query) use ($field, $sql_with_params) {
+            function (DataQuery $query) use ($field, $sqlWithParams) {
                 $query->selectField(
-                    $sql_with_params,
+                    $sqlWithParams,
                     $field
                 );
             }
@@ -36,15 +36,15 @@ class VSearch
         string $column,
         string $text,
         string $dir = 'ASC',
-        string $annotation_name = 'embedding_distance'
+        string $annotationName = 'embedding_distance'
     ): DataList {
         return VSearch::annotateQuery(
             $query,
-            $annotation_name,
+            $annotationName,
             VecDistance::create(
                 Column::create($column),
                 VectorFrom::single($text)
             )
-        )->sort($annotation_name, $dir);
+        )->sort($annotationName, $dir);
     }
 }
