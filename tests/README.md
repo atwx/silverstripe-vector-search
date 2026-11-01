@@ -34,16 +34,21 @@ vendor/bin/phpunit vendor/atwx/silverstripe-vector-search/tests/php \
 
 ## In CI
 
-[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs the same thing against a
-MariaDB service container. It also runs locally with [act](https://github.com/nektos/act):
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs the suite against a MariaDB
+service container, plus a `lint` job for `phpcs` and `phpstan`. It also runs locally with
+[act](https://github.com/nektos/act):
 
 ```bash
 act push -j tests
+act push -j lint
 ```
 
-The job deliberately runs inside a `php:*-cli` container so the service is reachable as
-`mariadb` under both runners - on GitHub a non-container job would see it on `127.0.0.1`,
-under act it stays on the container network.
+Run the jobs one at a time. act bind-mounts this directory into every job, so running them
+together has two `composer install` processes writing the same `vendor/`.
+
+The jobs run inside a `php:*-cli` container so the service is reachable as `mariadb` under
+both runners - on GitHub a non-container job would see it on `127.0.0.1`, under act it
+stays on the container network.
 
 ## Layout
 

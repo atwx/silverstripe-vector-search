@@ -2,4 +2,6 @@
 
 namespace Atwx\VectorSearch\ORM\Func\Distance;
 
-abstract class VecDistanceCosine extends VecDistance {}
+abstract class VecDistanceCosine extends VecDistance
+{
+}

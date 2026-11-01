@@ -9,9 +9,9 @@ use SilverStripe\Dev\SapphireTest;
 
 /**
  * Base class for the tests that need an embeddings provider. The stub is registered for
- * the whole test, so nothing in the module can reach a real API by accident.
+ * the whole test, so nothing in the module can reach a real API.
  *
- * Note the filename: PHPUnit collects `*Test.php`, so this one is deliberately not that.
+ * PHPUnit collects `*Test.php`, which is why this file is not named that.
  */
 abstract class VectorSearchTestCase extends SapphireTest
 {

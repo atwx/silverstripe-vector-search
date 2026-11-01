@@ -32,8 +32,6 @@ use SilverStripe\Core\Injector\Injectable;
  * fail (the VECTOR column has a fixed size).
  *
  * @author Sebi <https://github.com/ItsSebis>
- *
- * edited by Apilonius64
  */
 class OpenAIEmbeddingsProvider implements EmbeddingsProvider
 {

@@ -18,7 +18,7 @@ class VSearch
         $sql = array_shift($compiled);
         $params = $compiled;
 
-        // Note: Null is not supported
+        // selectField() takes SQL without placeholders, so the parameters are inlined here.
         $sql_with_params = DB::inline_parameters($sql, $params);
 
         return $query->alterDataQuery(

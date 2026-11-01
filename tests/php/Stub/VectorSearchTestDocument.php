@@ -10,8 +10,8 @@ use SilverStripe\ORM\DataObject;
  * A vector column with a cosine index on it, which is what VEC_DISTANCE() needs in order
  * to pick a metric.
  *
- * There is deliberately no $indexes entry: DBVector::getIndexSpecs() already asks for the
- * vector index, and a custom entry would replace it with a plain one.
+ * No $indexes entry: DBVector::getIndexSpecs() already asks for the vector index, and a
+ * custom entry would replace it with a plain one.
  */
 class VectorSearchTestDocument extends DataObject implements TestOnly
 {

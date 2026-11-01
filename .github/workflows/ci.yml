@@ -15,21 +15,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # PHP 8.4 is the floor in practice: MSchemaManager declares final properties,
-        # which 8.3 rejects outright, even though composer.json allows ^8.3 through
-        # silverstripe/framework.
+        # MSchemaManager declares final properties, which need PHP 8.4.
         php: ['8.4']
-        # Only 11.8 passes today. 11.7 has VECTOR columns but no VEC_DISTANCE(), and
-        # both 11.7 and 12.0 render the vector index options unquoted in SHOW CREATE
-        # TABLE (`"M"=6` rather than 11.8's `"M"='6'`), which MSchemaManager's parser
-        # does not match - on those versions db:build rebuilds the HNSW graph every run.
-        # Add them back once vectorIndexOptions() accepts unquoted values.
+        # 11.8 is the first release with VEC_DISTANCE(). MariaDB 12 renders vector index
+        # options differently in SHOW CREATE TABLE and is not supported yet.
         mariadb: ['11.8']
 
     # The job runs inside a PHP container so that the MariaDB service is addressable by
-    # its own name both on GitHub and under `act`. With a non-container job GitHub maps
-    # the service to 127.0.0.1 while act leaves it on the container network, and no single
-    # host name would work in both.
+    # its own name both on GitHub and under `act`. A non-container job would see the
+    # service on 127.0.0.1 on GitHub but on the container network under act.
     container:
       image: php:${{ matrix.php }}-cli
 
@@ -76,8 +70,7 @@ jobs:
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist
 
-      # act does not apply the service health check, so wait for the server explicitly
-      # rather than racing it.
+      # act does not apply the service health check, so wait for the server explicitly.
       - name: Wait for MariaDB
         run: |
           for _ in $(seq 1 60); do
@@ -100,3 +93,38 @@ jobs:
 
       - name: PHPUnit
         run: vendor/bin/phpunit
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    container:
+      image: php:8.4-cli
+
+    env:
+      COMPOSER_NO_INTERACTION: 1
+
+    steps:
+      - name: Install system packages
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git unzip libicu-dev libzip-dev
+
+      - name: Install PHP extensions
+        run: docker-php-ext-install -j"$(nproc)" intl zip
+
+      - name: Install Composer
+        run: |
+          curl -sS https://getcomposer.org/installer \
+            | php -- --install-dir=/usr/local/bin --filename=composer
+
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: PHP CodeSniffer
+        run: vendor/bin/phpcs
+
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --no-progress

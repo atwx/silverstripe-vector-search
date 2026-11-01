@@ -20,8 +20,12 @@ class DBVector extends DBField
         return false;
     }
 
-    public function __construct(?string $name = null, string $distance = "euclidean", int | null $size = null, array $options = [])
-    {
+    public function __construct(
+        ?string $name = null,
+        string $distance = "euclidean",
+        int | null $size = null,
+        array $options = []
+    ) {
         $this->size = $size ?? Injector::inst()->get(EmbeddingsProvider::class)->getDimensions();
 
         $this->distance = $distance;
@@ -39,10 +43,10 @@ class DBVector extends DBField
     {
         $result = parent::validate();
 
-        if ($this->value === NULL) {
+        if ($this->value === null) {
             $result->addFieldError(
                 'Vector',
-                'NULL is currently not supported. Note: E.g. MariaDB does not support NULL for VECTOR INDEX at all.'
+                'NULL is not supported: MariaDB does not allow NULL in a VECTOR INDEX.'
             );
 
             return $result;
@@ -51,7 +55,9 @@ class DBVector extends DBField
         if (!is_array($this->value)) {
             $result->addFieldError(
                 'Vector',
-                'DBVector expects a compiled Function as value. You likely want to use VectorFrom::single(...)->compile()'
+                'DBVector expects a compiled function as value. '
+                    . 'Use VectorFrom::single(...)->compile(), or assign VectorFrom::single(...) '
+                    . 'to a DataObject that uses the SupportsVFuncs trait.'
             );
         }
 

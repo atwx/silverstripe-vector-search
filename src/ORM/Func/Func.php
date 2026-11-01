@@ -18,10 +18,11 @@ class Func
         $this->args = func_get_args();
     }
 
-    // array layout:
-    // [template, arg0, arg1, ...]
-
-    // Compiles a single obj
+    /**
+     * Compiles one argument. A compiled fragment is [$sql, ...$parameters]: the SQL
+     * first, then one parameter per `?` in it, left to right. Anything that is not a
+     * Func becomes a single bound parameter.
+     */
     public static function compileObj(string | Func $o): array
     {
         if ($o instanceof Func) {
@@ -56,7 +57,6 @@ class Func
 
     public static function create(mixed ...$args)
     {
-        # R: works?
         return Injector::inst()->create(static::class, ...$args);
     }
 }

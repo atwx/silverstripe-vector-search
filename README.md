@@ -1,13 +1,16 @@
 # silverstripe-vector-search
 
+[![CI](https://github.com/atwx/silverstripe-vector-search/actions/workflows/ci.yml/badge.svg)](https://github.com/atwx/silverstripe-vector-search/actions/workflows/ci.yml)
+
 Vector embeddings and similarity search for the Silverstripe ORM, using MariaDB's native `VECTOR` type.
 
 Silverstripe Vector Search adds a `Vector` field type, turns text into embeddings through a pluggable provider (any OpenAI-compatible API by default), and orders `DataList` by vector distance. It is a good fit for semantic search, "related content", and retrieval for RAG setups.
 
 ## Requirements
 
+- PHP 8.4
 - Silverstripe Framework 6
-- MariaDB 11.7 or newer (the first release with `VECTOR` columns and vector indexes)
+- MariaDB 11.8 (the first release with `VEC_DISTANCE()`). MariaDB 12 is not supported yet: it reports vector index options in a different format, which makes `sake db:build` rebuild the index on every run
 - An API key for an OpenAI-compatible embeddings API — OpenAI, [OpenRouter](https://openrouter.ai), [Requesty](https://requesty.ai), Azure OpenAI, a local Ollama/LM Studio server — or your own embeddings provider (see [Using a different embeddings provider](#using-a-different-embeddings-provider))
 
 ## Installation
@@ -29,33 +32,38 @@ The default endpoint is OpenAI's. To use a different service, see [Configuration
 ### 1. Add a vector field
 
 ```php
+use Atwx\VectorSearch\ORM\Func\SupportsVFuncs;
 use SilverStripe\ORM\DataObject;
 
 class Document extends DataObject
 {
     use SupportsVFuncs;
-    
+
     private static string $table_name = 'Document';
 
     private static array $db = [
         'Content' => 'Text',
         'Embedding' => 'Vector',
     ];
-
-    private static array $indexes = [
-        'Embedding' => true,
-    ];
 }
 ```
 
-The column defaults to 1536 dimensions. If your model produces a different size, set it explicitly, e.g. `'Embedding' => 'Vector(768)'`. Indexed vector fields use cosine distance.
+A vector field asks for its own vector index, so it needs no entry in `$indexes`. Adding one replaces the vector index with a plain index, and `VEC_DISTANCE()` then fails with `index is not found`.
+
+The field takes a distance and a size, in that order: `'Vector("cosine", 768)'`. Both are optional — the distance defaults to `euclidean`, and the size to the `dimensions` of the configured embeddings provider (1536). Pass the size whenever your model produces a different one:
+
+| Spec | Distance | Size |
+| --- | --- | --- |
+| `'Vector'` | `euclidean` | provider's `dimensions` |
+| `'Vector("cosine")'` | `cosine` | provider's `dimensions` |
+| `'Vector("cosine", 768)'` | `cosine` | 768 |
 
 Run `sake db:build --flush` to create the column and index.
 
 ### 2. Store an embedding
 
 ```php
-use Atwx\VectorSearch\ORM\Func\Generic\VectorFrom;
+use Atwx\VectorSearch\ORM\Func\VectorFrom;
 
 $doc = Document::create();
 $doc->Content = $text;
@@ -83,37 +91,41 @@ foreach ($texts as $i => $text) {
 ```php
 use Atwx\VectorSearch\ORM\Helpers\VSearch;
 
-$results = VSearch::sort_by_distance(Document::get(), 'Embedding', $userInput)->limit(5);
+$results = VSearch::sortByDistance(Document::get(), 'Embedding', $userInput)->limit(5);
 
 foreach ($results as $doc) {
     echo $doc->embedding_distance; // lower is more similar
 }
 ```
 
-`sort_by_distance()` embeds the search text, adds the distance to each row as `embedding_distance`, and sorts ascending. Pass a sort direction and an annotation name as the 4th and 5th arguments to change either.
+`sortByDistance()` embeds the search text, adds the distance to each row as `embedding_distance`, and sorts ascending. Pass a sort direction and an annotation name as the 4th and 5th arguments to change either.
 
 ### Custom distance queries
 
-`VSearch::annotate_query()` adds any SQL function expression to the query as a named field. The distance functions live in `Atwx\VectorSearch\ORM\Func\Generic\Distance`:
+`VSearch::annotateQuery()` adds any SQL function expression to the query as a named field. The distance functions live in `Atwx\VectorSearch\ORM\Func\Distance`:
 
 | Class                  | SQL function              |
 | ---------------------- | ------------------------- |
-| `VecDistance`          | `VEC_DISTANCE` (uses the index's metric) |
+| `VecDistance`          | `VEC_DISTANCE` (uses the metric stored on the column's index) |
 | `VecDistanceCosine`    | `VEC_DISTANCE_COSINE`     |
 | `VecDistanceEuclidean` | `VEC_DISTANCE_EUCLIDEAN`  |
 
+These classes are abstract: the Injector binds each to the backend for the current database, so build them with `::create()` rather than `new`.
+
 ```php
-use Atwx\VectorSearch\ORM\Func\Generic\Column;
-use Atwx\VectorSearch\ORM\Func\Generic\Distance\VecDistanceEuclidean;
-use Atwx\VectorSearch\ORM\Func\Generic\VectorFrom;
+use Atwx\VectorSearch\ORM\Func\Column;
+use Atwx\VectorSearch\ORM\Func\Distance\VecDistanceEuclidean;
+use Atwx\VectorSearch\ORM\Func\VectorFrom;
 use Atwx\VectorSearch\ORM\Helpers\VSearch;
 
-$list = VSearch::annotate_query(
+$list = VSearch::annotateQuery(
     Document::get(),
     'distance',
-    new VecDistanceEuclidean(new Column('Embedding'), VectorFrom::single($userInput))
+    VecDistanceEuclidean::create(Column::create('Embedding'), VectorFrom::single($userInput))
 )->sort('distance', 'ASC');
 ```
+
+`Column::create()` escapes its argument as a column name. A plain string argument is sent as a bound parameter instead, so use `Column` for column references.
 
 ## Configuration
 
@@ -213,6 +225,12 @@ class LocalEmbeddingsProvider implements EmbeddingsProvider
     {
         // Return one float[] per input text, in the same order.
     }
+
+    public function getDimensions(): int
+    {
+        // The size of the vectors this provider returns.
+        return 768;
+    }
 }
 ```
 
@@ -222,9 +240,20 @@ SilverStripe\Core\Injector\Injector:
     class: App\Embedding\LocalEmbeddingsProvider
 ```
 
+## Tests
+
+```bash
+composer install
+SS_DATABASE_CLASS=MySQLDatabase SS_DATABASE_SERVER=127.0.0.1 \
+SS_DATABASE_USERNAME=root SS_DATABASE_PASSWORD=root \
+SS_DATABASE_NAME=ss_vector_search vendor/bin/phpunit
+```
+
+The suite runs against a real MariaDB server and never calls an embeddings API. See [`tests/README.md`](tests/README.md) for the details, including how to run the CI workflow locally with [act](https://github.com/nektos/act).
+
 ## Supported databases
 
-Only MariaDB is supported at the moment. To support another database, add SQL function wrappers in `Atwx\VectorSearch\ORM\Func\Generic` (subclasses of `Func`) that map to that database's vector functions.
+Only MariaDB is supported at the moment. To support another database, add SQL function wrappers under `Atwx\VectorSearch\ORM\Func\Backend` (subclasses of `Func`) that map to that database's vector functions, and bind them to the abstract classes in `Atwx\VectorSearch\ORM\Func` with the Injector.
 
 ## Example project
 

@@ -32,18 +32,17 @@ final class DBVectorTest extends VectorSearchTestCase
     }
 
     /**
-     * The README documents `Vector(768)` as the way to set the size. It is not: the first
-     * constructor argument is the distance, so that spec leaves the size at the provider's
-     * dimensions and sets the index distance to the string "768".
+     * Field spec arguments reach the constructor in order, so a single one is the
+     * distance and the size stays at the provider's dimensions.
      */
-    public function testTheFirstFieldSpecArgumentIsTheDistanceNotTheSize(): void
+    public function testADistanceOnlyFieldSpecKeepsTheProvidersSize(): void
     {
         $this->embeddings->setDimensions(7);
 
-        $field = DBField::create_field('Vector(768)', null, 'Embedding');
+        $field = DBField::create_field('Vector("cosine")', null, 'Embedding');
 
         $this->assertSame('vector(7) not null', $field->getFieldSpec());
-        $this->assertSame('768', $field->getIndexSpecs()['distance']);
+        $this->assertSame('cosine', $field->getIndexSpecs()['distance']);
     }
 
     public function testBothFieldSpecArgumentsAreApplied(): void
@@ -83,7 +82,7 @@ final class DBVectorTest extends VectorSearchTestCase
         $result = $field->validate();
 
         $this->assertFalse($result->isValid());
-        $this->assertStringContainsString('NULL is currently not supported', $this->firstMessage($result));
+        $this->assertStringContainsString('NULL is not supported', $this->firstMessage($result));
     }
 
     public function testARawValueIsRejectedWithAPointerToVectorFrom(): void

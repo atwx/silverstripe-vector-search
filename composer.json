@@ -8,6 +8,7 @@
     ],
     "license": "BSD-3-Clause",
     "require": {
+        "php": "^8.4",
         "silverstripe/framework": "^6.0",
         "openai-php/client": "^0.22.0",
         "guzzlehttp/guzzle": "^7.9"

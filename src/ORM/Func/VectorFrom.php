@@ -3,7 +3,6 @@
 namespace Atwx\VectorSearch\ORM\Func;
 
 use Atwx\VectorSearch\ORM\Func\Func;
-
 use Atwx\VectorSearch\Embedding\EmbeddingsProvider;
 use SilverStripe\Core\Injector\Injector;
 use Override;

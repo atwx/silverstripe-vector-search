@@ -7,9 +7,9 @@ use SilverStripe\ORM\Connect\MySQLSchemaManager;
 
 class MSchemaManager extends MySQLSchemaManager
 {
-    protected final string $indexTemplate = '%s "%s" (%s)';
-    protected final string $argTemplate = '%s=%s';
-    protected final string $argSeparator = ' ';
+    final protected string $indexTemplate = '%s "%s" (%s)';
+    final protected string $argTemplate = '%s=%s';
+    final protected string $argSeparator = ' ';
 
     /**
      * Modified version of MySQLSchemaManager's implementation. Maps the vector type and
@@ -165,9 +165,18 @@ class MSchemaManager extends MySQLSchemaManager
     protected function getIndexSqlDefinition($indexName, $indexSpec)
     {
         if ($indexSpec['type'] == 'using') {
-            return sprintf('index "%s" using (%s)', $indexName, $this->implodeIndexColumnList($indexSpec['columns'], $indexSpec['type']));
+            return sprintf(
+                'index "%s" using (%s)',
+                $indexName,
+                $this->implodeIndexColumnList($indexSpec['columns'], $indexSpec['type'])
+            );
         } else {
-            $indexExp = [sprintf($this->indexTemplate, $indexSpec['type'], $indexName, $this->implodeIndexColumnList($indexSpec['columns'], $indexSpec['type']))];
+            $indexExp = [sprintf(
+                $this->indexTemplate,
+                $indexSpec['type'],
+                $indexName,
+                $this->implodeIndexColumnList($indexSpec['columns'], $indexSpec['type'])
+            )];
 
             $this->optionalSqlArgs($indexExp, $indexSpec, [
                 'm' => 'M',
@@ -198,7 +207,11 @@ class MSchemaManager extends MySQLSchemaManager
         }
 
         $parts = [
-            sprintf('%s (%s)', $indexSpec['type'], $this->implodeIndexColumnList($indexSpec['columns'], $indexSpec['type']))
+            sprintf(
+                '%s (%s)',
+                $indexSpec['type'],
+                $this->implodeIndexColumnList($indexSpec['columns'], $indexSpec['type'])
+            )
         ];
 
         $this->optionalSqlArgs($parts, $indexSpec, [

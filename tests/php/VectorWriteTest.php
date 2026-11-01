@@ -103,7 +103,7 @@ final class VectorWriteTest extends VectorSearchTestCase
         $document->Content = 'no embedding';
 
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessageMatches('/NULL is currently not supported/');
+        $this->expectExceptionMessageMatches('/NULL is not supported/');
         $document->write();
     }
 
@@ -120,8 +120,8 @@ final class VectorWriteTest extends VectorSearchTestCase
     /**
      * Silverstripe connects with sql_mode=ANSI, which is not a strict mode, so MariaDB
      * downgrades a wrong-length vector to a warning and stores all zeros instead of
-     * refusing the row. Nothing downstream can tell that apart from a real embedding,
-     * which is what OpenAIEmbeddingsProvider's `validate_dimensions` is there to prevent.
+     * refusing the row. Nothing downstream can tell that apart from a real embedding;
+     * OpenAIEmbeddingsProvider's `validate_dimensions` catches it before the write.
      */
     public function testAVectorOfTheWrongSizeIsSilentlyStoredAsZeroes(): void
     {
