@@ -1,3 +1,7 @@
+---
+name: silverstripe-vector-search
+---
+
 # see https://docs.silverstripe.org/en/developer_guides/configuration/configuration/
 SilverStripe\Core\Injector\Injector:
   Vector:

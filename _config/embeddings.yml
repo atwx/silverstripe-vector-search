@@ -1,3 +1,7 @@
+---
+name: silverstripe-vector-search-embeddings
+---
+
 SilverStripe\Core\Injector\Injector:
   Atwx\VectorSearch\Embedding\EmbeddingsProvider:
     class: Atwx\VectorSearch\Embedding\OpenRouterEmbeddingsProvider
