@@ -85,10 +85,13 @@ class MSchemaManager extends MySQLSchemaManager {
      * the option name keeps the case it was created with, the value is always quoted (even
      * the numeric M), and identifiers are double quoted under ANSI_QUOTES - which Silverstripe
      * always sets - but backticked otherwise, so both spellings are accepted here.
+     *
+     * An option that is missing from the output was never stored; MariaDB then resolves it
+     * against @@mhnsw_default_m / @@mhnsw_default_distance when the index is used.
      */
     protected function vectorIndexOptions(string $table): array
     {
-        $createTable = $this->query("SHOW CREATE TABLE \"$table\"")->record()['Create Table'] ?? '';
+        $createTable = $this->showCreateTable($table);
         $options = [];
 
         preg_match_all(
@@ -118,6 +121,27 @@ class MSchemaManager extends MySQLSchemaManager {
         }
 
         return $options;
+    }
+
+    /**
+     * SHOW CREATE TABLE output with the engine specific extensions left in.
+     *
+     * Silverstripe connects with sql_mode=ANSI, under which MariaDB renders portable ANSI
+     * SQL and silently drops everything engine specific - ENGINE, AUTO_INCREMENT, CHARSET
+     * and, the reason this matters here, the vector index options. ANSI_QUOTES on its own
+     * keeps them and keeps identifier quoting intact, so the mode is narrowed for this one
+     * statement and restored right afterwards.
+     */
+    protected function showCreateTable(string $table): string
+    {
+        $sqlMode = (string) $this->query('SELECT @@session.sql_mode')->value();
+        $this->query('SET SESSION sql_mode = ' . $this->database->quoteString('ANSI_QUOTES'));
+
+        try {
+            return $this->query("SHOW CREATE TABLE \"$table\"")->record()['Create Table'] ?? '';
+        } finally {
+            $this->query('SET SESSION sql_mode = ' . $this->database->quoteString($sqlMode));
+        }
     }
 
     protected function optionalSqlArg(array &$args, array $spec, string $specKey, string $sqlKey): void {
