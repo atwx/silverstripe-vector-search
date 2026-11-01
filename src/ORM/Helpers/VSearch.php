@@ -3,11 +3,10 @@
 namespace Atwx\VectorSearch\ORM\Helpers;
 
 use Atwx\VectorSearch\ORM\Func\Column;
-use Atwx\VectorSearch\ORM\Func\Distance\VecDistanceCosine;
+use Atwx\VectorSearch\ORM\Func\Distance\VecDistance;
 use Atwx\VectorSearch\ORM\Func\Func;
 use Atwx\VectorSearch\ORM\Func\VectorFrom;
 use SilverStripe\ORM\DataList;
-use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataQuery;
 use SilverStripe\ORM\DB;
 
@@ -40,7 +39,7 @@ class VSearch {
         return VSearch::annotateQuery(
             $query,
             $annotation_name,
-            VecDistanceCosine::create(
+            VecDistance::create(
                 Column::create($column),
                 VectorFrom::single($text)
             )
