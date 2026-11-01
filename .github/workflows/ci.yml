@@ -17,9 +17,11 @@ jobs:
       matrix:
         # MSchemaManager declares final properties, which need PHP 8.4.
         php: ['8.4']
-        # 11.8 is the first release with VEC_DISTANCE(), so it is the floor; 12 renders
-        # the vector index options without quotes, which the option parser accepts too.
-        mariadb: ['11.8', '12.0']
+        # 11.8 is the first release with VEC_DISTANCE(), so it is the floor. Every
+        # release after it renders the stored vector index options differently - 11.8
+        # and 13 quote the values, 12 leaves them bare - and the option parser has to
+        # keep reading all of those spellings back.
+        mariadb: ['11.8', '12.0', '13.0']
 
     # The job runs inside a PHP container so that the MariaDB service is addressable by
     # its own name both on GitHub and under `act`. A non-container job would see the

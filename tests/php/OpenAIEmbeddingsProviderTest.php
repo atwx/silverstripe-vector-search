@@ -65,15 +65,17 @@ final class OpenAIEmbeddingsProviderTest extends TestCase
         return (new OpenAIEmbeddingsProvider())->setClient($client);
     }
 
-    public function testShippedDefaultsAreWired(): void
+    /**
+     * The shipped `_config/embeddings.yml` binds EmbeddingsProvider to this class.
+     *
+     * The default values are deliberately not asserted. They are declared as private
+     * statics on the class and merely repeated in that YAML, so pinning them here
+     * would only restate the source - and `Config::inst()` hands back the host
+     * project's merged config, which is meant to override them. Every other test in
+     * this file sets the values it needs with `Config::modify()` for that reason.
+     */
+    public function testTheShippedProviderIsWired(): void
     {
-        $config = Config::inst()->get(OpenAIEmbeddingsProvider::class);
-
-        $this->assertSame('https://api.openai.com/v1', $config['base_uri']);
-        $this->assertSame('OPENAI_API_KEY', $config['api_key_env']);
-        $this->assertSame('text-embedding-3-small', $config['model']);
-        $this->assertSame(1536, $config['dimensions']);
-
         $this->assertInstanceOf(
             OpenAIEmbeddingsProvider::class,
             Injector::inst()->get(EmbeddingsProvider::class)
