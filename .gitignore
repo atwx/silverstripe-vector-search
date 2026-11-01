@@ -7,3 +7,5 @@ composer.lock
 yarn-error.log
 .vscode
 .idea_2
+.agents
+CLAUDE.md

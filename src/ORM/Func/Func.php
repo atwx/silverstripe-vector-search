@@ -21,7 +21,7 @@ class Func {
     // [template, arg0, arg1, ...]
 
     // Compiles a single obj
-    public static function compile_obj(string | Func $o): array {
+    public static function compileObj(string | Func $o): array {
         if ($o instanceof Func) {
             return $o->compile();
         }
@@ -29,12 +29,12 @@ class Func {
         return ['?', $o];
     }
 
-    protected function compile_args(): array {
+    protected function compileArgs(): array {
         $compiled_sql = [];
         $compiled_args = [];
 
         for ($i=0; $i != $this->num_args; $i++) {
-            $result = $this->compile_obj($this->args[$i]);
+            $result = $this->compileObj($this->args[$i]);
             array_push($compiled_sql, array_shift($result));
             array_push($compiled_args, ...$result);
         }
@@ -44,7 +44,7 @@ class Func {
     }
 
     public function compile(): array {
-        $result = $this->compile_args();
+        $result = $this->compileArgs();
         $compiled = [sprintf($this->template, $this->function, array_shift($result))];
 
         return array_merge($compiled, $result);

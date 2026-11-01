@@ -31,7 +31,7 @@ abstract class VectorFrom extends Func {
     }
 
     #[Override]
-    protected function compile_args(): array
+    protected function compileArgs(): array
     {
         return ['?', json_encode($this->args[0])];
     }

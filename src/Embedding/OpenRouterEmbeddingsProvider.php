@@ -15,6 +15,8 @@ use SilverStripe\Core\Environment;
  * or writes will fail (the VECTOR column has a fixed size).
  * 
  * @author Sebi <https://github.com/ItsSebis>
+ * 
+ * edited by Apilonius64
  */
 class OpenRouterEmbeddingsProvider implements EmbeddingsProvider
 {

@@ -12,7 +12,7 @@ use SilverStripe\ORM\DataQuery;
 use SilverStripe\ORM\DB;
 
 class VSearch {
-    public static function annotate_query(mixed $query, string $field, Func $value) {
+    public static function annotateQuery(mixed $query, string $field, Func $value) {
         $compiled = $value->compile();
         $sql = array_shift($compiled);
         $params = $compiled;
@@ -30,14 +30,14 @@ class VSearch {
         );
     }
 
-    public static function sort_by_distance(
+    public static function sortByDistance(
         mixed $query,
         string $column,
         string $text,
         string $dir = 'ASC',
         string $annotation_name = 'embedding_distance'
     ): DataList {
-        return VSearch::annotate_query(
+        return VSearch::annotateQuery(
             $query,
             $annotation_name,
             VecDistanceCosine::create(

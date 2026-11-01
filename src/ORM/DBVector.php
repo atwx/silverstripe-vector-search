@@ -10,6 +10,7 @@ use SilverStripe\ORM\DB;
 class DBVector extends DBField
 {
     private string $distance = 'cosine';
+    protected int $size;
 
     #[Override]
     public function scalarValueOnly(): bool
@@ -68,7 +69,7 @@ class DBVector extends DBField
     {
         return [
             'type' => 'vector',
-            'columns' => [$this->name],
+            'columns' => [$this->name], # clean?
             'distance' => $this->distance
         ];
     }
