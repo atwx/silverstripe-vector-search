@@ -1,5 +1,5 @@
 {
-    "name": "atwx/s2embed",
+    "name": "atwx/silverstripe-vector-search",
     "description": "Adds support for vector embeddings to your MariaDB 11.7+ database.",
     "type": "silverstripe-vendormodule",
     "keywords": [

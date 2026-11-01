@@ -13,7 +13,7 @@ S2 Embed adds a `Vector` field type, turns text into embeddings through a plugga
 ## Installation
 
 ```bash
-composer require atwx/s2embed
+composer require atwx/silverstripe-vector-search
 ```
 
 Add your API key to `.env`:
