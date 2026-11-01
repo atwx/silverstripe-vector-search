@@ -72,11 +72,11 @@ class MSchemaManager extends MySQLSchemaManager {
     }
 
     protected function optionalSqlArg(array &$args, array $spec, string $specKey, string $sqlKey): void {
-        if (!array_key_exists('m', $spec)) {
+        if (!array_key_exists($specKey, $spec)) {
             return; 
         }
 
-        array_push($args, sprintf($this->argTemplate, 'M', $spec['m']));
+        array_push($args, sprintf($this->argTemplate, $sqlKey, $spec[$specKey]));
     }
 
     protected function optionalSqlArgs(array &$args, array $spec, array $mapping): void {
