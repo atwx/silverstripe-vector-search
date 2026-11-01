@@ -11,7 +11,8 @@ class MSchemaManager extends MySQLSchemaManager {
     protected final string $argSeparator = ' ';
 
     /**
-     * Modified version of MySQLSchemaManager's implementation. Maps the vector type.
+     * Modified version of MySQLSchemaManager's implementation. Maps the vector type and
+     * enriches vector indexes with the options MariaDB stored for them.
      */
     #[Override]
     public function indexList($table)
@@ -19,6 +20,7 @@ class MSchemaManager extends MySQLSchemaManager {
         $indexes = $this->query("SHOW INDEXES IN \"$table\"");
         $groupedIndexes = [];
         $indexList = [];
+        $hasVectorIndex = false;
 
         foreach ($indexes as $index) {
             if ($index['Index_type'] == 'FULLTEXT') {
@@ -31,6 +33,7 @@ class MSchemaManager extends MySQLSchemaManager {
                 $type = 'rtree';
             } elseif ($index['Index_type'] == 'VECTOR') {
                 $type = 'vector';
+                $hasVectorIndex = true;
             } else {
                 $type = 'index';
             }
@@ -49,26 +52,72 @@ class MSchemaManager extends MySQLSchemaManager {
             $groupedIndexes[$index['Key_name']]['type'] = $type;
         }
 
-        if ($groupedIndexes) {
-            foreach ($groupedIndexes as $index => $details) {
-                ksort($details['fields']);
-                $indexList[$index] = [
-                    'name' => $index,
-                    'columns' => $details['fields'],
-                    'type' => $details['type'],
-                ];
+        // SHOW INDEXES (and information_schema.STATISTICS) do not carry the vector index
+        // options, so they have to come from SHOW CREATE TABLE - but only when there is
+        // a vector index to read them for, to avoid a second query for every other table.
+        $vectorOptions = $hasVectorIndex ? $this->vectorIndexOptions($table) : [];
 
-                if(array_key_exists('m', $details)) {
-                    $indexList[$index]['M'] = $details['M'];
-                }
+        foreach ($groupedIndexes as $index => $details) {
+            ksort($details['fields']);
+            $indexList[$index] = [
+                'name' => $index,
+                'columns' => $details['fields'],
+                'type' => $details['type'],
+            ];
 
-                if(array_key_exists('distance', $details)) {
-                    $indexList[$index]['distance'] = $details['distance'];
-                }
+            // Only the options MariaDB actually stored are reported. An absent option is
+            // resolved against @@mhnsw_default_m / @@mhnsw_default_distance at query time;
+            // filling those values in here would make every spec that omits them compare
+            // unequal in requireIndex() and rebuild the HNSW graph on each db:build.
+            foreach ($vectorOptions[$index] ?? [] as $option => $value) {
+                $indexList[$index][$option] = $value;
             }
         }
 
         return $indexList;
+    }
+
+    /**
+     * Stored index options, keyed by index name and then by lowercased option name
+     * ('m', 'distance'). Only VECTOR keys carry options, so only those are returned.
+     *
+     * SHOW CREATE TABLE renders them as `VECTOR KEY "v" ("Col") "M"='6' "DISTANCE"='cosine'`:
+     * the option name keeps the case it was created with, the value is always quoted (even
+     * the numeric M), and identifiers are double quoted under ANSI_QUOTES - which Silverstripe
+     * always sets - but backticked otherwise, so both spellings are accepted here.
+     */
+    protected function vectorIndexOptions(string $table): array
+    {
+        $createTable = $this->query("SHOW CREATE TABLE \"$table\"")->record()['Create Table'] ?? '';
+        $options = [];
+
+        preg_match_all(
+            '/^\s*VECTOR KEY\s+(?:`((?:[^`]|``)+)`|"((?:[^"]|"")+)")\s*\([^)]*\)([^\r\n]*)/mi',
+            $createTable,
+            $keys,
+            PREG_SET_ORDER
+        );
+
+        foreach ($keys as $key) {
+            $name = $key[1] !== ''
+                ? str_replace('``', '`', $key[1])
+                : str_replace('""', '"', $key[2]);
+            $options[$name] = [];
+
+            preg_match_all(
+                '/(?:`(\w+)`|"(\w+)")\s*=\s*\'((?:[^\']|\'\')*)\'/',
+                $key[3],
+                $pairs,
+                PREG_SET_ORDER
+            );
+
+            foreach ($pairs as $pair) {
+                $option = strtolower($pair[1] !== '' ? $pair[1] : $pair[2]);
+                $options[$name][$option] = str_replace("''", "'", $pair[3]);
+            }
+        }
+
+        return $options;
     }
 
     protected function optionalSqlArg(array &$args, array $spec, string $specKey, string $sqlKey): void {

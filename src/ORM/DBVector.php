@@ -22,7 +22,7 @@ class DBVector extends DBField
     {
         $this->size = $size;
 
-        return parent::__construct($name, $options);
+        parent::__construct($name, $options);
     }
 
     public function getFieldSpec(): string
