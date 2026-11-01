@@ -10,8 +10,10 @@ use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataQuery;
 use SilverStripe\ORM\DB;
 
-class VSearch {
-    public static function annotateQuery(mixed $query, string $field, Func $value) {
+class VSearch
+{
+    public static function annotateQuery(mixed $query, string $field, Func $value)
+    {
         $compiled = $value->compile();
         $sql = array_shift($compiled);
         $params = $compiled;

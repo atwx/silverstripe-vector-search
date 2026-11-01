@@ -5,7 +5,8 @@ namespace Atwx\VectorSearch\ORM\Func\Backend\MySQL\Connect;
 use Override;
 use SilverStripe\ORM\Connect\MySQLSchemaManager;
 
-class MSchemaManager extends MySQLSchemaManager {
+class MSchemaManager extends MySQLSchemaManager
+{
     protected final string $indexTemplate = '%s "%s" (%s)';
     protected final string $argTemplate = '%s=%s';
     protected final string $argSeparator = ' ';
@@ -39,7 +40,8 @@ class MSchemaManager extends MySQLSchemaManager {
             }
 
             $column = $index['Column_name'];
-            if (in_array($type, ['index', 'unique'])
+            if (
+                in_array($type, ['index', 'unique'])
                 && isset($index['Collation']) && $index['Collation'] !== 'NULL'
             ) {
                 $column .= match ($index['Collation']) {
@@ -144,15 +146,17 @@ class MSchemaManager extends MySQLSchemaManager {
         }
     }
 
-    protected function optionalSqlArg(array &$args, array $spec, string $specKey, string $sqlKey): void {
+    protected function optionalSqlArg(array &$args, array $spec, string $specKey, string $sqlKey): void
+    {
         if (!array_key_exists($specKey, $spec)) {
-            return; 
+            return;
         }
 
         array_push($args, sprintf($this->argTemplate, $sqlKey, $spec[$specKey]));
     }
 
-    protected function optionalSqlArgs(array &$args, array $spec, array $mapping): void {
+    protected function optionalSqlArgs(array &$args, array $spec, array $mapping): void
+    {
         foreach ($mapping as $specKey => $sqlKey) {
             $this->optionalSqlArg($args, $spec, $specKey, $sqlKey);
         }
@@ -178,7 +182,8 @@ class MSchemaManager extends MySQLSchemaManager {
     protected function convertIndexSpec($indexSpec)
     {
         // Return already converted spec
-        if (!is_array($indexSpec)
+        if (
+            !is_array($indexSpec)
             || !array_key_exists('type', $indexSpec ?? [])
             || !array_key_exists('columns', $indexSpec ?? [])
             || !is_array($indexSpec['columns'])
