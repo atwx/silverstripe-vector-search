@@ -50,7 +50,7 @@ class DBVector extends DBField
                 $value === null              => null,
                 
                 // uncompiled SQL function
-                $value instanceof VectorFrom => $value->compile(),
+                (($value instanceof VectorFrom) && $value->getSize() === $this->size) => $value->compile(),
 
                 // already compiled SLQ function
                 (is_array($value) && count($value) > 0 && is_string($value[0])) => $value,

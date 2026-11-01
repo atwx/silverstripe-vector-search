@@ -38,4 +38,9 @@ abstract class VectorFrom extends Func
     {
         return ['?', json_encode($this->args[0])];
     }
+
+    public function getSize(): int
+    {
+        return count($this->args[0]);
+    }
 }
