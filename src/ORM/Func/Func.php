@@ -4,7 +4,7 @@ namespace Atwx\VectorSearch\ORM\Func;
 
 use SilverStripe\Core\Injector\Injector;
 
-abstract class Func
+class Func
 {
     protected string $function = '';
     protected int $numArgs = 0;
