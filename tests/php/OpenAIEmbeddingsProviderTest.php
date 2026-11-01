@@ -192,10 +192,10 @@ final class OpenAIEmbeddingsProviderTest extends TestCase
 
     public function testMissingApiKeyNamesTheConfiguredEnvVariable(): void
     {
-        Config::modify()->set(OpenAIEmbeddingsProvider::class, 'api_key_env', 'S2EMBED_UNSET_KEY');
+        Config::modify()->set(OpenAIEmbeddingsProvider::class, 'api_key_env', 'VECTOR_SEARCH_UNSET_KEY');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('S2EMBED_UNSET_KEY is not set in .env');
+        $this->expectExceptionMessage('VECTOR_SEARCH_UNSET_KEY is not set in .env');
         (new OpenAIEmbeddingsProvider())->embed('a');
     }
 }
