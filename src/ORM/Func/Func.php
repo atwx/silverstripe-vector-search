@@ -9,7 +9,7 @@ class Func {
     public int $num_args = 0;
     public array $args = [];
     public string $template = "%s(%s)";
-    public string $arg_seperator = ",";
+    public string $argSeparator = ",";
 
     public function __construct()
     {
@@ -30,17 +30,17 @@ class Func {
     }
 
     protected function compileArgs(): array {
-        $compiled_sql = [];
-        $compiled_args = [];
+        $compiledSQL = [];
+        $compiledArgs = [];
 
         for ($i=0; $i != $this->num_args; $i++) {
             $result = $this->compileObj($this->args[$i]);
-            array_push($compiled_sql, array_shift($result));
-            array_push($compiled_args, ...$result);
+            array_push($compiledSQL, array_shift($result));
+            array_push($compiledArgs, ...$result);
         }
 
-        $compiled = [join($this->arg_seperator, $compiled_sql)];
-        return array_merge($compiled, $compiled_args);
+        $compiled = [join($this->argSeparator, $compiledSQL)];
+        return array_merge($compiled, $compiledArgs);
     }
 
     public function compile(): array {
@@ -50,7 +50,7 @@ class Func {
         return array_merge($compiled, $result);
     }
 
-    public static function create(...$args) {
+    public static function create(mixed ...$args) {
         # R: works?
         return Injector::inst()->create(static::class, ...$args);
     }
