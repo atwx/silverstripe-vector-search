@@ -17,6 +17,7 @@ class DBVector extends DBField
 {
     private string $distance;
     protected int $size;
+    protected int|null $m;
 
     #[Override]
     public function scalarValueOnly(): bool
@@ -28,7 +29,7 @@ class DBVector extends DBField
         ?string $name = null,
         string $distance = "euclidean",
         int | null $size = null,
-        int $m = 16,
+        int|null $m = null,
         array $options = []
     ) {
         $this->size = $size ?? Injector::inst()->get(EmbeddingsProvider::class)->getDimensions();
@@ -45,12 +46,21 @@ class DBVector extends DBField
     public function setValue(mixed $value, null|array|ModelData $record = null, bool $markChanged = true): static
     {
         $this->value = match (true) {
+                // null
                 $value === null              => null,
+                
+                // uncompiled SQL function
                 $value instanceof VectorFrom => $value->compile(),
-                (is_array($value) && count($value) > 0 && is_float($value[0]))  => array_map('floatval', array_values($value)),
+
+                // already compiled SLQ function
                 (is_array($value) && count($value) > 0 && is_string($value[0])) => $value,
 
-                is_string($value)            => array_values(unpack('g*', $value)),
+                // raw float values
+                (is_array($value) && count($value) === $this->size)  => array_map('floatval', array_values($value)),
+
+                // raw float values from db
+                is_string($value) && strlen($value) === $this->size * 4
+                                 => array_values(unpack('g*', $value)),
                 default                      => throw new InvalidArgumentException("Unsupported value for vector field {$this->name}"),
         };
 
@@ -106,12 +116,12 @@ class DBVector extends DBField
     #[Override]
     public function getIndexSpecs(): ?array
     {
-        return [
+        return array_filter([
             'type' => 'vector',
             'columns' => [$this->name],
             'distance' => $this->distance,
-            'm' => $this->m
-        ];
+            'm' => $this->m,
+        ], fn ($v) => $v !== null);
     }
 
     public function requireField(): void
