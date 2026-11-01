@@ -14,6 +14,19 @@ class RecordingSchemaManager extends MSchemaManager implements TestOnly
     /** @var string[] */
     public array $queries = [];
 
+    private ?string $createTable = null;
+
+    /**
+     * Stands in for the server's SHOW CREATE TABLE output, so the option parser can be
+     * driven with the spellings of MariaDB versions that are not under test.
+     */
+    public function setCreateTable(?string $createTable): static
+    {
+        $this->createTable = $createTable;
+
+        return $this;
+    }
+
     public function query($sql, $errorLevel = E_USER_ERROR)
     {
         $this->queries[] = $sql;
@@ -57,6 +70,11 @@ class RecordingSchemaManager extends MSchemaManager implements TestOnly
     public function callShowCreateTable(string $table): string
     {
         return $this->showCreateTable($table);
+    }
+
+    protected function showCreateTable(string $table): string
+    {
+        return $this->createTable ?? parent::showCreateTable($table);
     }
 
     public function callGetIndexSqlDefinition(string $indexName, array $indexSpec): string

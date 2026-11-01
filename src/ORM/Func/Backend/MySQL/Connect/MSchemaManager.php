@@ -83,10 +83,11 @@ class MSchemaManager extends MySQLSchemaManager
      * Stored index options, keyed by index name and then by lowercased option name
      * ('m', 'distance'). Only VECTOR keys carry options, so only those are returned.
      *
-     * SHOW CREATE TABLE renders them as `VECTOR KEY "v" ("Col") "M"='6' "DISTANCE"='cosine'`:
-     * the option name keeps the case it was created with, the value is always quoted (even
-     * the numeric M), and identifiers are double quoted under ANSI_QUOTES - which Silverstripe
-     * always sets - but backticked otherwise, so both spellings are accepted here.
+     * SHOW CREATE TABLE renders them as `VECTOR KEY "v" ("Col") "M"='6' "DISTANCE"='cosine'`.
+     * The option name keeps the case it was created with. Identifiers are double quoted
+     * under ANSI_QUOTES - which Silverstripe always sets - but backticked otherwise, and
+     * values are quoted on MariaDB 11.8 but bare on 11.7 and 12, so all four spellings are
+     * accepted here.
      *
      * An option that is missing from the output was never stored; MariaDB then resolves it
      * against @@mhnsw_default_m / @@mhnsw_default_distance when the index is used.
@@ -110,15 +111,17 @@ class MSchemaManager extends MySQLSchemaManager
             $options[$name] = [];
 
             preg_match_all(
-                '/(?:`(\w+)`|"(\w+)")\s*=\s*\'((?:[^\']|\'\')*)\'/',
+                '/(?:`(\w+)`|"(\w+)")\s*=\s*(?:\'((?:[^\']|\'\')*)\'|(\w+))/',
                 $key[3],
                 $pairs,
-                PREG_SET_ORDER
+                PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL
             );
 
             foreach ($pairs as $pair) {
-                $option = strtolower($pair[1] !== '' ? $pair[1] : $pair[2]);
-                $options[$name][$option] = str_replace("''", "'", $pair[3]);
+                $option = strtolower($pair[1] ?? $pair[2]);
+                $options[$name][$option] = $pair[3] !== null
+                    ? str_replace("''", "'", $pair[3])
+                    : $pair[4];
             }
         }
 

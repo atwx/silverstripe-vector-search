@@ -110,6 +110,69 @@ final class MSchemaManagerTest extends VectorSearchTestCase
         );
     }
 
+    /**
+     * MariaDB renders the stored options differently between releases: 11.8 quotes the
+     * values, 11.7 and 12 leave them bare, and the identifiers are backticked whenever
+     * ANSI_QUOTES is not in effect. All of them have to parse to the same thing.
+     */
+    #[DataProvider('provideVectorKeySpellings')]
+    public function testOptionsAreParsedFromEverySpelling(string $keyLine, array $expected): void
+    {
+        $this->schema->setCreateTable(self::createTableSql($keyLine));
+
+        $this->assertSame($expected, $this->schema->callVectorIndexOptions('VectorOptionsTest'));
+    }
+
+    public static function provideVectorKeySpellings(): array
+    {
+        $options = ['Embedding' => ['m' => '6', 'distance' => 'cosine']];
+
+        return [
+            'MariaDB 11.8' => [
+                'VECTOR KEY "Embedding" ("Embedding") "M"=\'6\' "DISTANCE"=\'cosine\'',
+                $options,
+            ],
+            'MariaDB 11.7 and 12' => [
+                'VECTOR KEY "Embedding" ("Embedding") "M"=6 "DISTANCE"=cosine',
+                $options,
+            ],
+            'backticked identifiers, quoted values' => [
+                'VECTOR KEY `Embedding` (`Embedding`) `M`=\'6\' `DISTANCE`=\'cosine\'',
+                $options,
+            ],
+            'backticked identifiers, bare values' => [
+                'VECTOR KEY `Embedding` (`Embedding`) `M`=6 `DISTANCE`=cosine',
+                $options,
+            ],
+            'another key follows' => [
+                'VECTOR KEY "Embedding" ("Embedding") "M"=6 "DISTANCE"=cosine,',
+                $options,
+            ],
+            'nothing stored' => [
+                'VECTOR KEY "Embedding" ("Embedding")',
+                ['Embedding' => []],
+            ],
+            'quotes in the index name' => [
+                'VECTOR KEY "Odd""Name" ("Embedding") "DISTANCE"=cosine',
+                ['Odd"Name' => ['distance' => 'cosine']],
+            ],
+            'not a vector key' => [
+                'KEY "Title" ("Title")',
+                [],
+            ],
+        ];
+    }
+
+    private static function createTableSql(string $keyLine): string
+    {
+        return "CREATE TABLE \"VectorOptionsTest\" (\n"
+            . "  \"ID\" int(11) NOT NULL AUTO_INCREMENT,\n"
+            . "  \"Embedding\" vector(3) NOT NULL,\n"
+            . "  PRIMARY KEY (\"ID\"),\n"
+            . "  $keyLine\n"
+            . ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    }
+
     public function testATableWithoutAVectorIndexCostsNoExtraQuery(): void
     {
         $this->createTable('PlainIndexTest', '"Title" varchar(50) not null default \'\'', 'KEY "Title" ("Title")');

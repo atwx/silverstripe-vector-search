@@ -39,12 +39,13 @@ service container, plus a `lint` job for `phpcs` and `phpstan`. It also runs loc
 [act](https://github.com/nektos/act):
 
 ```bash
-act push -j tests
+act push -j tests --matrix mariadb:11.8
 act push -j lint
 ```
 
-Run the jobs one at a time. act bind-mounts this directory into every job, so running them
-together has two `composer install` processes writing the same `vendor/`.
+act bind-mounts this directory into every job it runs, so anything running in parallel -
+the two jobs, or the two MariaDB legs of the matrix - shares one `vendor/`, and the
+`composer install` steps can collide. Pick a single job and matrix leg at a time.
 
 The jobs run inside a `php:*-cli` container so the service is reachable as `mariadb` under
 both runners - on GitHub a non-container job would see it on `127.0.0.1`, under act it

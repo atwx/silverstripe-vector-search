@@ -10,7 +10,7 @@ Silverstripe Vector Search adds a `Vector` field type, turns text into embedding
 
 - PHP 8.4
 - Silverstripe Framework 6
-- MariaDB 11.8 (the first release with `VEC_DISTANCE()`). MariaDB 12 is not supported yet: it reports vector index options in a different format, which makes `sake db:build` rebuild the index on every run
+- MariaDB 11.8 or newer (the first release with `VEC_DISTANCE()`)
 - An API key for an OpenAI-compatible embeddings API — OpenAI, [OpenRouter](https://openrouter.ai), [Requesty](https://requesty.ai), Azure OpenAI, a local Ollama/LM Studio server — or your own embeddings provider (see [Using a different embeddings provider](#using-a-different-embeddings-provider))
 
 ## Installation
