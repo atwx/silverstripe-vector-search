@@ -3,7 +3,6 @@
 namespace Atwx\VectorSearch\ORM;
 
 use Atwx\VectorSearch\Embedding\EmbeddingsProvider;
-use Atwx\VectorSearch\Embedding\OpenRouterEmbeddingsProvider;
 use Override;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Validation\ValidationResult;

@@ -2,13 +2,13 @@
 
 Vector embeddings and similarity search for the Silverstripe ORM, using MariaDB's native `VECTOR` type.
 
-S2 Embed adds a `Vector` field type, turns text into embeddings through a pluggable provider (OpenRouter by default), and orders `DataList` by vector distance. It is a good fit for semantic search, "related content", and retrieval for RAG setups.
+S2 Embed adds a `Vector` field type, turns text into embeddings through a pluggable provider (any OpenAI-compatible API by default), and orders `DataList` by vector distance. It is a good fit for semantic search, "related content", and retrieval for RAG setups.
 
 ## Requirements
 
 - Silverstripe Framework 6
 - MariaDB 11.7 or newer (the first release with `VECTOR` columns and vector indexes)
-- An [OpenRouter](https://openrouter.ai) API key, or your own embeddings provider (see [Using a different embeddings provider](#using-a-different-embeddings-provider))
+- An API key for an OpenAI-compatible embeddings API — OpenAI, [OpenRouter](https://openrouter.ai), [Requesty](https://requesty.ai), Azure OpenAI, a local Ollama/LM Studio server — or your own embeddings provider (see [Using a different embeddings provider](#using-a-different-embeddings-provider))
 
 ## Installation
 
@@ -19,8 +19,10 @@ composer require atwx/s2embed
 Add your API key to `.env`:
 
 ```dotenv
-OPENROUTER_API_KEY="sk-or-..."
+OPENAI_API_KEY="sk-..."
 ```
+
+The default endpoint is OpenAI's. To use a different service, see [Configuration](#configuration).
 
 ## Usage
 
@@ -115,15 +117,83 @@ $list = VSearch::annotate_query(
 
 ## Configuration
 
-The default provider and model are set in [`_config/embeddings.yml`](_config/embeddings.yml). Override them in your project's config:
+The default provider calls any OpenAI-compatible `/embeddings` endpoint through
+[openai-php/client](https://github.com/openai-php/client). Defaults ship in
+[`_config/embeddings.yml`](_config/embeddings.yml); override them in your project's config:
 
 ```yaml
-Atwx\VectorSearch\Embedding\OpenRouterEmbeddingsProvider:
+Atwx\VectorSearch\Embedding\OpenAIEmbeddingsProvider:
+  model: 'text-embedding-3-small'
+  dimensions: 1536
+```
+
+| Option                | Default                      | Purpose                                                                                                                      |
+| --------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `base_uri`            | `https://api.openai.com/v1`  | Base URI of the API, including the version segment. `/embeddings` is appended. A URI without a scheme is treated as `https`.   |
+| `api_key_env`         | `OPENAI_API_KEY`             | Name of the `.env` variable holding the API key. The key itself is never read from YAML.                                       |
+| `model`               | `text-embedding-3-small`     | Model identifier, in whatever form the service expects.                                                                        |
+| `dimensions`          | `1536`                       | Expected output size. Also the default size of `Vector` columns.                                                               |
+| `send_dimensions`     | `false`                      | Send `dimensions` as a request parameter to shorten the vectors. Only some models support it; others reject the request.        |
+| `validate_dimensions` | `true`                       | Throw if the API returns a different vector size, instead of letting MariaDB reject the write with a less obvious error.        |
+| `batch_size`          | `0`                          | Largest number of texts per request; `0` sends them all in one call. Set it when your provider caps the batch size.             |
+| `organization`        | `null`                       | Sent as `OpenAI-Organization`. OpenAI only.                                                                                    |
+| `project`             | `null`                       | Sent as `OpenAI-Project`. OpenAI only.                                                                                         |
+| `http_headers`        | `[]`                         | Extra HTTP headers, e.g. OpenRouter's attribution headers.                                                                     |
+| `query_params`        | `[]`                         | Extra query string parameters, e.g. Azure OpenAI's `api-version`.                                                              |
+| `extra_parameters`    | `[]`                         | Extra parameters merged into the request body, e.g. `encoding_format`. `model` and `input` always win over these.               |
+| `timeout`             | `30`                         | Request timeout in seconds.                                                                                                    |
+| `connect_timeout`     | `10`                         | Connection timeout in seconds.                                                                                                 |
+
+If you switch to a model with a different output size, update `dimensions` **and** the
+`Vector(<size>)` field to match. MariaDB will reject vectors whose length doesn't match the column.
+
+### Examples
+
+**OpenRouter**
+
+```yaml
+Atwx\VectorSearch\Embedding\OpenAIEmbeddingsProvider:
+  base_uri: 'https://openrouter.ai/api/v1'
+  api_key_env: 'OPENROUTER_API_KEY'
+  model: 'openai/text-embedding-3-small'
+  dimensions: 1536
+  http_headers:
+    HTTP-Referer: 'https://example.com'
+    X-Title: 'My Site'
+```
+
+**Requesty**
+
+```yaml
+Atwx\VectorSearch\Embedding\OpenAIEmbeddingsProvider:
+  base_uri: 'https://router.requesty.ai/v1'
+  api_key_env: 'REQUESTY_API_KEY'
   model: 'openai/text-embedding-3-small'
   dimensions: 1536
 ```
 
-If you switch to a model with a different output size, update the `Vector(<size>)` field to match. MariaDB will reject vectors whose length doesn't match the column.
+**Azure OpenAI**
+
+```yaml
+Atwx\VectorSearch\Embedding\OpenAIEmbeddingsProvider:
+  base_uri: 'https://my-resource.openai.azure.com/openai/deployments/my-embedding-deployment'
+  api_key_env: 'AZURE_OPENAI_API_KEY'
+  model: 'text-embedding-3-small'
+  dimensions: 1536
+  query_params:
+    api-version: '2024-02-01'
+```
+
+**Ollama, running locally**
+
+```yaml
+Atwx\VectorSearch\Embedding\OpenAIEmbeddingsProvider:
+  base_uri: 'http://localhost:11434/v1'
+  api_key_env: 'OLLAMA_API_KEY'   # any non-empty value; Ollama ignores it
+  model: 'nomic-embed-text'
+  dimensions: 768
+  batch_size: 1
+```
 
 ### Using a different embeddings provider
 

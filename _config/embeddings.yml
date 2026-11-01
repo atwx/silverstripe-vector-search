@@ -4,8 +4,10 @@ name: silverstripe-vector-search-embeddings
 
 SilverStripe\Core\Injector\Injector:
   Atwx\VectorSearch\Embedding\EmbeddingsProvider:
-    class: Atwx\VectorSearch\Embedding\OpenRouterEmbeddingsProvider
+    class: Atwx\VectorSearch\Embedding\OpenAIEmbeddingsProvider
 
-Atwx\VectorSearch\Embedding\OpenRouterEmbeddingsProvider:
-  model: 'openai/text-embedding-3-small'
+Atwx\VectorSearch\Embedding\OpenAIEmbeddingsProvider:
+  base_uri: 'https://api.openai.com/v1'
+  api_key_env: 'OPENAI_API_KEY'
+  model: 'text-embedding-3-small'
   dimensions: 1536
