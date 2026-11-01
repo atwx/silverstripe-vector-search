@@ -61,7 +61,11 @@ class DBVector extends DBField
                 // raw float values from db
                 is_string($value) && strlen($value) === $this->size * 4
                                  => array_values(unpack('g*', $value)),
-                default                      => throw new InvalidArgumentException("Unsupported value for vector field {$this->name}"),
+                default                      => throw new InvalidArgumentException(
+                    "Unsupported value for vector field {$this->name}. "
+                    . 'Use VectorFrom::single(...), or assign VectorFrom::single(...) '
+                    . 'to a DataObject that uses the SupportsVFuncs trait.'
+                ),
         };
 
         return $this;

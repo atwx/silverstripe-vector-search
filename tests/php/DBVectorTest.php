@@ -4,6 +4,7 @@ namespace Atwx\VectorSearch\Tests;
 
 use Atwx\VectorSearch\ORM\DBVector;
 use Atwx\VectorSearch\ORM\Func\VectorFrom;
+use InvalidArgumentException;
 use SilverStripe\ORM\FieldType\DBField;
 
 /**
@@ -88,12 +89,10 @@ final class DBVectorTest extends VectorSearchTestCase
     public function testARawValueIsRejectedWithAPointerToVectorFrom(): void
     {
         $field = new DBVector('Embedding', 'cosine', 3);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/VectorFrom::single/');
         $field->setValue('[1,2,3]');
-
-        $result = $field->validate();
-
-        $this->assertFalse($result->isValid());
-        $this->assertStringContainsString('VectorFrom::single', $this->firstMessage($result));
     }
 
     public function testACompiledFunctionIsAccepted(): void
