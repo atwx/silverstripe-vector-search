@@ -1,6 +1,6 @@
 {
     "name": "atwx/s2embed",
-    "description": "Adds support for vector embeddings to you mysql database.",
+    "description": "Adds support for vector embeddings to your MariaDB 11.7+ database.",
     "type": "silverstripe-vendormodule",
     "keywords": [
         "silverstripe",

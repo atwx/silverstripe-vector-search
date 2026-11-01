@@ -31,6 +31,8 @@ use SilverStripe\ORM\DataObject;
 
 class Document extends DataObject
 {
+    use SupportsVFuncs;
+    
     private static string $table_name = 'Document';
 
     private static array $db = [
@@ -55,7 +57,7 @@ use Atwx\VectorSearch\ORM\Func\Generic\VectorFrom;
 
 $doc = Document::create();
 $doc->Content = $text;
-$doc->Embedding = VectorFrom::single($text)->compile();
+$doc->Embedding = VectorFrom::single($text);
 $doc->write();
 ```
 
@@ -69,7 +71,7 @@ $vectors = VectorFrom::batch($texts);
 foreach ($texts as $i => $text) {
     $doc = Document::create();
     $doc->Content = $text;
-    $doc->Embedding = $vectors[$i]->compile();
+    $doc->Embedding = $vectors[$i];
     $doc->write();
 }
 ```

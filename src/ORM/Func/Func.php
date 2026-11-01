@@ -6,11 +6,11 @@ use SilverStripe\Core\Injector\Injector;
 
 class Func
 {
-    public string $function = '';
-    public int $num_args = 0;
-    public array $args = [];
-    public string $template = "%s(%s)";
-    public string $argSeparator = ",";
+    protected string $function = '';
+    protected int $num_args = 0;
+    protected array $args = [];
+    protected string $template = "%s(%s)";
+    protected string $argSeparator = ",";
 
     public function __construct()
     {

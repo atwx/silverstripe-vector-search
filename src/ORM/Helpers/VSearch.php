@@ -12,7 +12,7 @@ use SilverStripe\ORM\DB;
 
 class VSearch
 {
-    public static function annotateQuery(mixed $query, string $field, Func $value)
+    public static function annotateQuery(mixed $query, string $field, Func $value): mixed
     {
         $compiled = $value->compile();
         $sql = array_shift($compiled);

@@ -26,8 +26,9 @@ class OpenRouterEmbeddingsProvider implements EmbeddingsProvider
 
     private static int $dimensions = 1536;
 
-    public function getDimensions(): int {
-        return $this->dimensions;
+    public function getDimensions(): int
+    {
+        return (int) static::config()->get('dimensions');
     }
 
     public function embed(string $text): array
