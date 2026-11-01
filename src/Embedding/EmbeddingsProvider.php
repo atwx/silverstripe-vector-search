@@ -16,4 +16,6 @@ interface EmbeddingsProvider
 
     /** @param string[] $texts @return float[][] one vector per input, same order */
     public function embedBatch(array $texts): array;
+
+    public function getDimensions(): int;
 }

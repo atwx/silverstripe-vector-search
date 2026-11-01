@@ -2,14 +2,17 @@
 
 namespace Atwx\VectorSearch\ORM;
 
+use Atwx\VectorSearch\Embedding\EmbeddingsProvider;
+use Atwx\VectorSearch\Embedding\OpenRouterEmbeddingsProvider;
 use Override;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\DB;
 
 class DBVector extends DBField
 {
-    private string $distance = 'cosine';
+    private string $distance;
     protected int $size;
 
     #[Override]
@@ -18,9 +21,15 @@ class DBVector extends DBField
         return false;
     }
 
-    public function __construct(?string $name = null, int $size = 1536, array $options = [])
+    public function __construct(?string $name = null, string $distance = "euclidean", int | null $size = null, array $options = [])
     {
         $this->size = $size;
+
+        if ($this->size === null) {
+            $this->size = Injector::inst()->get(EmbeddingsProvider::class)->getDimensions();
+        }
+
+        $this->distance = $distance;
 
         parent::__construct($name, $options);
     }
@@ -69,7 +78,7 @@ class DBVector extends DBField
     {
         return [
             'type' => 'vector',
-            'columns' => [$this->name], # clean?
+            'columns' => [$this->name],
             'distance' => $this->distance
         ];
     }
