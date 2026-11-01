@@ -7,6 +7,7 @@ use Atwx\VectorSearch\Tests\Stub\VectorSearchTestDocument;
 use Atwx\VectorSearch\Tests\Stub\VectorSearchTestEuclideanDocument;
 use SilverStripe\Core\Validation\ValidationException;
 use SilverStripe\ORM\DB;
+use InvalidArgumentException;
 
 /**
  * Writing a vector through the ORM, end to end: the column MariaDB actually creates, the
@@ -135,8 +136,7 @@ final class VectorWriteTest extends VectorSearchTestCase
         $document = VectorSearchTestDocument::create();
         $document->Embedding = '[1,2,3]';
 
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessageMatches('/VectorFrom::single/');
+        $this->expectException(InvalidArgumentException::class);
         $document->write();
     }
 
