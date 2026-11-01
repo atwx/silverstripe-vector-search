@@ -23,11 +23,7 @@ class DBVector extends DBField
 
     public function __construct(?string $name = null, string $distance = "euclidean", int | null $size = null, array $options = [])
     {
-        $this->size = $size;
-
-        if ($this->size === null) {
-            $this->size = Injector::inst()->get(EmbeddingsProvider::class)->getDimensions();
-        }
+        $this->size = $size ?? Injector::inst()->get(EmbeddingsProvider::class)->getDimensions();
 
         $this->distance = $distance;
 
